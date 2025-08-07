@@ -41,7 +41,7 @@ jobs:
         run: npm ci
 
       - name: Run type checking
-        run: npx tsc --noEmit
+        run: npx tsc --noEmit --project .
 
   build:
     runs-on: ubuntu-latest
