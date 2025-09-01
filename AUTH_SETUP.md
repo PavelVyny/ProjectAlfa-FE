@@ -3,12 +3,14 @@
 ## Что добавлено
 
 ### 1. Зависимости
+
 - `@headlessui/react` - для модальных окон
 - `@heroicons/react` - для иконок
 - `axios` - для HTTP запросов
 - `react-hook-form` - для управления формами
 
 ### 2. Структура файлов
+
 ```
 src/
 ├── components/
@@ -24,6 +26,7 @@ src/
 ```
 
 ### 3. Функциональность
+
 - ✅ Кнопки "Войти" и "Регистрация" в правом верхнем углу
 - ✅ Модальные окна для входа и регистрации
 - ✅ Валидация форм
@@ -36,19 +39,24 @@ src/
 ## Настройка
 
 ### 1. Переменные окружения
+
 Создайте файл `.env.local` в корне проекта:
+
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
 ### 2. Запуск бэкенда
+
 Убедитесь, что ProjectAlfa-BE запущен на порту 3001:
+
 ```bash
 cd ../ProjectAlfa-BE
 npm run start:dev
 ```
 
 ### 3. Запуск фронтенда
+
 ```bash
 npm run dev
 ```
@@ -56,41 +64,46 @@ npm run dev
 ## API Endpoints
 
 ### Регистрация
+
 - **URL**: `POST /auth/register`
-- **Body**: 
+- **Body**:
   ```json
   {
-    "email": "user@example.com",
-    "password": "password123",
-    "firstName": "Иван",
-    "lastName": "Иванов"
+  	"email": "user@example.com",
+  	"password": "password123",
+  	"firstName": "Иван",
+  	"lastName": "Иванов"
   }
   ```
 
 ### Вход
+
 - **URL**: `POST /auth/login`
 - **Body**:
   ```json
   {
-    "email": "user@example.com",
-    "password": "password123"
+  	"email": "user@example.com",
+  	"password": "password123"
   }
   ```
 
 ## Особенности реализации
 
 ### 1. Безопасность
+
 - Пароли не сохраняются в localStorage
 - JWT токены автоматически добавляются к запросам
 - Валидация на стороне клиента
 
 ### 2. UX
+
 - Адаптивный дизайн
 - Состояния загрузки
 - Обработка ошибок
 - Автоматическое закрытие модалок после успешной операции
 
 ### 3. Архитектура
+
 - React Context для глобального состояния
 - Разделение логики на сервисы
 - TypeScript для типизации
