@@ -44,7 +44,8 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
 		setError(null);
 
 		try {
-			await authRegister(data.email, data.password, data.firstName, data.lastName);
+			// Send empty strings for firstName and lastName if not provided
+			await authRegister(data.email, data.password, data.firstName || "", data.lastName || "");
 			reset();
 			onClose();
 		} catch (error) {
