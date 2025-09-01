@@ -1,9 +1,8 @@
 import axios from "axios";
 import { RegisterDto, LoginDto, AuthResponseDto } from "../types/auth";
 
-// Создаем экземпляр axios с базовым URL
-const API_BASE_URL =
-	process.env.NEXT_PUBLIC_API_URL || "https://project-alfa-backend-[hash]-[region].run.app";
+// Create axios instance with base URL - using local API routes to avoid CORS
+const API_BASE_URL = typeof window !== "undefined" ? window.location.origin + "/api" : "/api";
 
 const authApi = axios.create({
 	baseURL: API_BASE_URL,
