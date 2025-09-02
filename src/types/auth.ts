@@ -18,6 +18,7 @@ export interface AuthResponseDto {
 		firstName?: string;
 		lastName?: string;
 		firebaseUid?: string;
+		avatar?: string;
 	};
 }
 

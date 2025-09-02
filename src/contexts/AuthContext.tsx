@@ -1,10 +1,11 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
 import { AuthState } from "../types/auth";
 import { authService } from "../services/authService";
 
 interface AuthContextType extends AuthState {
+	isLoading: boolean;
 	login: (email: string, password: string) => Promise<void>;
 	register: (
 		email: string,
@@ -12,6 +13,7 @@ interface AuthContextType extends AuthState {
 		firstName?: string,
 		lastName?: string,
 	) => Promise<void>;
+	loginWithGoogle: (idToken: string) => Promise<void>;
 	logout: () => void;
 }
 
@@ -25,24 +27,47 @@ export const useAuth = () => {
 	return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-	const [authState, setAuthState] = useState<AuthState>({
-		user: null,
-		token: null,
-		isAuthenticated: false,
-	});
+// Инициализируем состояние синхронно при загрузке модуля
+const getInitialAuthState = (): { authState: AuthState; isLoading: boolean } => {
+	if (typeof window === "undefined") {
+		// На сервере всегда показываем загрузку
+		return {
+			authState: { user: null, token: null, isAuthenticated: false },
+			isLoading: true,
+		};
+	}
 
-	// Initialize state on load
-	useEffect(() => {
+	try {
 		const token = authService.getToken();
 		const user = authService.getUser();
 
 		if (token && user) {
-			setAuthState({
-				user,
-				token,
-				isAuthenticated: true,
-			});
+			return {
+				authState: { user, token, isAuthenticated: true },
+				isLoading: false,
+			};
+		}
+	} catch (error) {
+		console.error("Error initializing auth:", error);
+	}
+
+	return {
+		authState: { user: null, token: null, isAuthenticated: false },
+		isLoading: false,
+	};
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+	const initialState = getInitialAuthState();
+	const [authState, setAuthState] = useState<AuthState>(initialState.authState);
+	const [isLoading, setIsLoading] = useState(initialState.isLoading);
+
+	// Синхронная инициализация при монтировании
+	useLayoutEffect(() => {
+		if (typeof window !== "undefined") {
+			const { authState: newAuthState, isLoading: newIsLoading } = getInitialAuthState();
+			setAuthState(newAuthState);
+			setIsLoading(newIsLoading);
 		}
 	}, []);
 
@@ -83,6 +108,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		}
 	};
 
+	const loginWithGoogle = async (idToken: string) => {
+		try {
+			const response = await authService.googleLogin(idToken);
+			authService.saveAuthData(response);
+
+			setAuthState({
+				user: response.user,
+				token: response.access_token,
+				isAuthenticated: true,
+			});
+		} catch (error) {
+			console.error("Google login error:", error);
+			throw error;
+		}
+	};
+
 	const logout = () => {
 		authService.logout();
 		setAuthState({
@@ -94,8 +135,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 	const value: AuthContextType = {
 		...authState,
+		isLoading,
 		login,
 		register,
+		loginWithGoogle,
 		logout,
 	};
 
