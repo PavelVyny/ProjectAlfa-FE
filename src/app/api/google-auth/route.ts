@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const BACKEND_URL =
+	process.env.NEXT_PUBLIC_API_URL ||
+	"https://project-alfa-backend-480977786594.us-central1.run.app";
 
 export async function POST(request: NextRequest) {
 	try {
