@@ -24,11 +24,6 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	// Не показываем модалку пока идет загрузка аутентификации
-	if (authLoading) {
-		return null;
-	}
-
 	const {
 		register,
 		handleSubmit,
@@ -38,6 +33,11 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
 	} = useForm<RegisterFormData>();
 
 	const password = watch("password");
+
+	// Не показываем модалку пока идет загрузка аутентификации
+	if (authLoading) {
+		return null;
+	}
 
 	const onSubmit = async (data: RegisterFormData) => {
 		if (data.password !== data.confirmPassword) {

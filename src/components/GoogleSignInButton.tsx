@@ -35,7 +35,7 @@ export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({ onSucces
 					console.log("Google button rendered successfully");
 				} catch (error) {
 					console.error("Error initializing Google button:", error);
-					onError?.(error);
+					onError?.(error instanceof Error ? error : String(error));
 				}
 			}
 		};
