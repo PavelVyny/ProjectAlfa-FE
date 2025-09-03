@@ -33,6 +33,12 @@ export const authService = {
 		return response.data;
 	},
 
+	// Google login
+	async googleLogin(idToken: string): Promise<AuthResponseDto> {
+		const response = await authApi.post("/google-auth", { credential: idToken });
+		return response.data;
+	},
+
 	// Выход пользователя
 	logout(): void {
 		localStorage.removeItem("auth_token");

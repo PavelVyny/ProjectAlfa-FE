@@ -20,7 +20,7 @@ interface RegisterFormData {
 }
 
 export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
-	const { register: authRegister } = useAuth();
+	const { register: authRegister, isLoading: authLoading } = useAuth();
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -33,6 +33,11 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
 	} = useForm<RegisterFormData>();
 
 	const password = watch("password");
+
+	// Не показываем модалку пока идет загрузка аутентификации
+	if (authLoading) {
+		return null;
+	}
 
 	const onSubmit = async (data: RegisterFormData) => {
 		if (data.password !== data.confirmPassword) {
@@ -67,10 +72,10 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
 
 	return (
 		<Dialog open={isOpen} onClose={handleClose} className="relative z-50">
-			<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+			<div className="fixed inset-0 bg-black/30 modal-backdrop" aria-hidden="true" />
 
 			<div className="fixed inset-0 flex items-center justify-center p-4">
-				<Dialog.Panel className="mx-auto max-w-sm rounded-lg bg-white p-8 shadow-xl">
+				<Dialog.Panel className="mx-auto max-w-sm rounded-lg bg-white p-8 shadow-xl modal-panel">
 					<div className="flex items-center justify-between mb-6">
 						<Dialog.Title className="text-lg font-semibold text-gray-900">
 							Registration

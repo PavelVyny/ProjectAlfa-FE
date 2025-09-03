@@ -5,6 +5,7 @@ import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../contexts/AuthContext";
+import { GoogleSignInButton } from "./GoogleSignInButton";
 
 interface LoginModalProps {
 	isOpen: boolean;
@@ -17,7 +18,7 @@ interface LoginFormData {
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
-	const { login } = useAuth();
+	const { login, loginWithGoogle } = useAuth();
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +28,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 		formState: { errors },
 		reset,
 	} = useForm<LoginFormData>();
+
+	const handleGoogleSignIn = async (response: { credential: string }) => {
+		setIsLoading(true);
+		setError(null);
+
+		try {
+			await loginWithGoogle(response.credential);
+			onClose();
+		} catch {
+			setError("Google sign-in failed");
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	const onSubmit = async (data: LoginFormData) => {
 		setIsLoading(true);
@@ -58,7 +73,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 			<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
 			<div className="fixed inset-0 flex items-center justify-center p-4">
-				<Dialog.Panel className="mx-auto max-w-sm rounded-lg bg-white p-8 shadow-xl">
+				<Dialog.Panel className="mx-auto max-w-md rounded-lg bg-white p-8 shadow-xl">
 					<div className="flex items-center justify-between mb-6">
 						<Dialog.Title className="text-lg font-semibold text-gray-900">Login</Dialog.Title>
 						<button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
@@ -115,6 +130,25 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 							className="w-full rounded-md bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50">
 							{isLoading ? "Logging in..." : "Login"}
 						</button>
+
+						<div className="relative my-6">
+							<div className="absolute inset-0 flex items-center">
+								<div className="w-full border-t border-gray-300" />
+							</div>
+							<div className="relative flex justify-center text-sm">
+								<span className="px-2 bg-white text-gray-500">Or continue with</span>
+							</div>
+						</div>
+
+						<div className="h-12 flex items-center justify-center">
+							<GoogleSignInButton
+								onSuccess={handleGoogleSignIn}
+								onError={(error) => {
+									console.error("Google Sign-In error:", error);
+									setError("Google sign-in failed");
+								}}
+							/>
+						</div>
 					</form>
 				</Dialog.Panel>
 			</div>
