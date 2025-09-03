@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 
 interface GoogleSignInButtonProps {
 	onSuccess: (response: { credential: string }) => void;
-	onError?: (error: any) => void;
+	onError?: (error: Error | string) => void;
 }
 
 export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({ onSuccess, onError }) => {
